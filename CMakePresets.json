@@ -1,0 +1,30 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "windows-vcpkg",
+      "displayName": "Windows + vcpkg",
+      "description": "Use Ninja generator with vcpkg on Windows",
+      "inherits": ["base"],
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL"
+      }
+    },
+    {
+      "name": "linux",
+      "displayName": "Linux",
+      "description": "Linux build with Ninja",
+      "inherits": ["base"]
+    }
+  ]
+}

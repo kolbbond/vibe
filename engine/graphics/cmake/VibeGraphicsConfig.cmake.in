@@ -1,0 +1,25 @@
+get_filename_component(vibegraphics_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+message(STATUS "VIBE GRAPHICS CONFIG")
+
+# add path
+list(APPEND CMAKE_MODULE_PATH ${vibegraphics_CMAKE_DIR})
+
+if(NOT TARGET smg)
+    find_dependency(smg REQUIRED)
+endif()
+
+# if we are not vibe include vibe!
+if(NOT TARGET vibegraphics)
+
+    message(STATUS "vibe graphics is not target")
+    message(STATUS "ADD VIBE GRAPHICS TARGETS")
+    find_dependency(VibeCommon CONFIG REQUIRED)
+
+    # include definitions
+    include("${vibegraphics_CMAKE_DIR}/VibeGraphicsTargets.cmake")
+endif()
+
+set(vibegraphics_LIBRARIES vibegraphics)
+

@@ -1,0 +1,32 @@
+get_filename_component(vibeaudio_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+message(STATUS "VIBE AUDIO CONFIG")
+
+# add path
+list(APPEND CMAKE_MODULE_PATH ${vibeaudio_CMAKE_DIR})
+
+# if we are not vibe include vibe!
+if(NOT TARGET vibeaudio)
+
+    message(STATUS "vibe audio is not target")
+    message(STATUS "ADD VIBE AUDIO TARGETS")
+    find_dependency(VibeCommon CONFIG REQUIRED)
+
+    find_dependency(FFTW REQUIRED)
+
+    # include definitions
+    include("${vibeaudio_CMAKE_DIR}/VibeAudioTargets.cmake")
+endif()
+
+find_dependency(SoundIo REQUIRED)
+if(NOT TARGET SoundIo::SoundIo)
+    # create target
+    add_library(SoundIo::SoundIo INTERFACE IMPORTED)
+    set_target_properties(SoundIo::SoundIo PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${SOUNDIO_INCLUDE_DIR}"
+        INTERFACE_LINK_LIBRARIES "${SOUNDIO_LIBRARY}")
+endif()
+
+set(vibeaudio_LIBRARIES vibeaudio)
+

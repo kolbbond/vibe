@@ -1,0 +1,38 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "base",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/../.deps",
+      "hidden": true
+    },
+    {
+      "name": "ci",
+      "inherits": ["base"]
+    },
+    {
+      "name": "external_deps",
+      "description": "Build with external deps on ubuntu",
+      "cacheVariables": {
+        "USE_BUNDLED":"OFF",
+        "USE_BUNDLED_TS":"ON",
+        "USE_BUNDLED_UTF8PROC":"ON",
+        "ENABLE_WASMTIME":"OFF"
+      },
+      "inherits": ["base"]
+    },
+    {
+      "name": "windows-vcpkg",
+      "displayName": "Windows + vcpkg",
+      "description": "Use Ninja generator on Windows",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../.deps",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "VCPKG_TARGET_TRIPLET": "x64-windows",
+        "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL"
+      }
+    }
+  ]
+}

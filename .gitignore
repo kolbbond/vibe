@@ -1,0 +1,17 @@
+*dropbox*
+build
+build/*
+lib/*
+*build/*
+*/build/*
+build
+zig-cache
+dependencies
+*.cache*
+octave-workspace
+build
+imgui.ini
+.deps
+.vibe
+
+.claude/settings.local.json

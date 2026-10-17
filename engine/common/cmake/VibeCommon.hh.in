@@ -1,0 +1,9 @@
+
+#ifndef VIBE_HH_
+#define VIBE_HH_
+
+// header file dependent on cmake setup
+
+// check our guild file if we need to add things here
+
+#endif

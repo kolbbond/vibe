@@ -1,0 +1,30 @@
+# ctest check: build/games.json lists every expected game with an existing binary
+#   cmake -DGAMES_JSON=<file> -DEXPECTED=a|b|c -P CheckGamesJson.cmake
+cmake_minimum_required(VERSION 3.22)
+
+if(NOT EXISTS "${GAMES_JSON}")
+    message(FATAL_ERROR "games.json: ${GAMES_JSON} does not exist")
+endif()
+file(READ "${GAMES_JSON}" json)
+string(REPLACE "|" ";" expected "${EXPECTED}")
+
+string(JSON count LENGTH "${json}")
+set(names "")
+if(count GREATER 0)
+    math(EXPR last "${count} - 1")
+    foreach(i RANGE ${last})
+        string(JSON name GET "${json}" ${i} name)
+        string(JSON binary GET "${json}" ${i} binary)
+        if(NOT EXISTS "${binary}")
+            message(FATAL_ERROR "games.json: ${name} binary missing: ${binary}")
+        endif()
+        list(APPEND names ${name})
+    endforeach()
+endif()
+
+foreach(game ${expected})
+    if(NOT game IN_LIST names)
+        message(FATAL_ERROR "games.json: ${game} is missing (has: ${names})")
+    endif()
+endforeach()
+message(STATUS "games.json ok: ${names}")

@@ -1,0 +1,6 @@
+[submodule "external/libsoundio"]
+	path = external/libsoundio
+	url = https://github.com/kolbbond/libsoundio.git
+[submodule "external/simple-magnum-gui"]
+	path = external/simple-magnum-gui
+	url = https://github.com/kolbbond/simple-magnum-gui.git

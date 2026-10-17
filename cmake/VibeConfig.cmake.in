@@ -1,0 +1,22 @@
+# find_package(Vibe): all engine libs (Vibe::Common Audio Graphics Fluid FluidPresets GameCore Game)
+# Third-party packages come from the vibe deps/ superbuild: put <vibe>/.deps/usr on CMAKE_PREFIX_PATH.
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+get_filename_component(_vibe_cmake_dir "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+# VibeManifest.cmake, CheckGamesJson.cmake, FindTCLAP.cmake
+list(APPEND CMAKE_MODULE_PATH "${_vibe_cmake_dir}")
+
+if(NOT TARGET Vibe::Common)
+    find_dependency(VibeCommon CONFIG HINTS "${_vibe_cmake_dir}/../vibecommon")
+    find_dependency(VibeAudio CONFIG HINTS "${_vibe_cmake_dir}/../vibeaudio")
+    find_dependency(Boost 1.80.0 COMPONENTS filesystem)
+    find_dependency(VibeGraphics CONFIG HINTS "${_vibe_cmake_dir}/../vibegraphics")
+    find_dependency(Magnum CONFIG)
+    find_dependency(jsoncpp CONFIG)
+    include("${_vibe_cmake_dir}/VibeFluidTargets.cmake")
+    include("${_vibe_cmake_dir}/VibeGameTargets.cmake")
+endif()
+
+check_required_components(Vibe)
