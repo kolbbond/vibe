@@ -35,4 +35,12 @@ target_link_libraries(test_audio_pipeline
 )
 add_test(test_audio_pipeline ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_audio_pipeline)
 
+add_executable(test_fft test_fft.cxx)
+target_link_libraries(test_fft
+    Arma::Armadillo
+    Vibe::Common
+    Vibe::Audio
+)
+add_test(test_fft ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_fft)
+
 message(STATUS "end of test creation")

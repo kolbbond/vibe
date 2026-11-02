@@ -187,9 +187,9 @@ void FFT::calc_frequencies(const arma::Mat<fltp>& samples,
 			}
 		}
 
-		// Frequency axis
+		// Frequency axis: one entry per bin (a regspace up to sample_rate/2 can round one short)
 		double dsr = static_cast<double>(sample_rate) / n;
-		freqs = arma::regspace<arma::Row<double>>(0, dsr, sample_rate / 2.0);
+		freqs = arma::regspace<arma::Row<double>>(0, n_out - 1) * dsr;
 	} else {
 		// Original arma::fft path
 		arma::Mat<arma::cx_double> fbins = arma::trans(arma::fft(arma::trans(samples.cols(fs, ls)), num_samples));
@@ -198,11 +198,11 @@ void FFT::calc_frequencies(const arma::Mat<fltp>& samples,
 		arma::Mat<fltp> P2 = arma::abs(fbins / num_samples);
 		assert(P2.n_cols == num_samples);
 		arma::Mat<double> P1 = P2.cols(0, num_samples / 2);
-		P1.cols(1, P1.n_cols - 2) = 2 * P1.cols(1, P1.n_cols - 2);
+		if (P1.n_cols > 2) P1.cols(1, P1.n_cols - 2) = 2 * P1.cols(1, P1.n_cols - 2);
 
 		// sample rate steps
 		double dsr = static_cast<double>(sample_rate) / num_samples;
-		freqs = arma::regspace<arma::Row<double>>(0, dsr, sample_rate / 2.0);
+		freqs = arma::regspace<arma::Row<double>>(0, P1.n_cols - 1) * dsr;
 		mags = P1;
 	}
 }
