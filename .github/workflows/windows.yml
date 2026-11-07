@@ -1,0 +1,74 @@
+name: Windows
+
+on:
+  push:
+    branches: [main, ci-windows]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    env:
+      # the engine's CMake looks for vcpkg (classic mode) here
+      VCPKG_ROOT: C:\vcpkg
+      VCPKG_DEFAULT_TRIPLET: x64-windows
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}\vcpkg-bincache
+      VCPKG_PACKAGES: >-
+        boost-filesystem boost-iostreams sdl2 ffmpeg fftw3 tclap
+        openblas lapack pkgconf
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      # vcpkg builds from source (ffmpeg and boost are slow); cache its binary packages
+      - name: Cache vcpkg binaries
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('.github/workflows/windows.yml') }}
+          restore-keys: vcpkg-${{ runner.os }}-
+
+      - name: Install vcpkg packages
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force $env:VCPKG_DEFAULT_BINARY_CACHE | Out-Null
+          & "$env:VCPKG_ROOT\vcpkg.exe" install $env:VCPKG_PACKAGES.Split(' ')
+
+      - name: Cache third-party deps
+        id: deps-cache
+        uses: actions/cache@v4
+        with:
+          path: .deps/usr
+          key: vibe-deps-${{ runner.os }}-${{ hashFiles('deps/**', '.gitmodules', '.github/workflows/windows.yml') }}
+
+      - name: Build third-party deps
+        if: steps.deps-cache.outputs.cache-hit != 'true'
+        run: |
+          cmake --preset windows-vcpkg -S deps
+          cmake --build .deps --parallel
+
+      - name: Configure
+        run: cmake --preset windows-vcpkg
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-logs
+          path: |
+            .deps/build/src/*-stamp/*.log
+            build/CMakeFiles/*.log
+          if-no-files-found: ignore
