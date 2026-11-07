@@ -27,6 +27,12 @@ jobs:
         with:
           arch: x64
 
+      # msvc-dev-cmd points VCPKG_ROOT at Visual Studio's bundled vcpkg, which has no
+      # classic mode; use the runner's standalone C:\vcpkg for the rest of the job
+      - name: Use standalone vcpkg
+        shell: pwsh
+        run: '"VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" >> $env:GITHUB_ENV'
+
       # vcpkg builds from source (ffmpeg and boost are slow); cache its binary packages
       - name: Cache vcpkg binaries
         uses: actions/cache@v4
