@@ -48,5 +48,6 @@ set(PYBIND11_URL "https://github.com/pybind/pybind11/archive/refs/tags/v3.0.0rc3
 set(PYBIND11_SHA256 "47e1b511bfca5f4d6467ab5731bf9a7d3e81d5dbfc13f58f78a39de3285a47bd")
 
 # Audio
-set(LIBSOUNDIO_URL "https://github.com/kolbbond/libsoundio/archive/refs/heads/master.zip")
-set(LIBSOUNDIO_SHA256 "04c38fabef9fbc70ecbe114f6d397cba11c5724f478516f5578751f0a7d2ee90")
+# same commit as the external/libsoundio submodule (a branch archive would change and fail the hash)
+set(LIBSOUNDIO_URL "https://github.com/kolbbond/libsoundio/archive/1b0c61c9619748434a4f8a610da3b96e64e5c86d.zip")
+set(LIBSOUNDIO_SHA256 "60f413c33354b1c36e11f35febc0da4959322b399457478c60fd02e7642916aa")

@@ -53,4 +53,4 @@ Either way `include(VibeManifest)` gives `vibe_add_manifest()` /
 
 MIT, see [LICENSE](LICENSE).
 
-Bundled third-party code keeps its own license: `engine/audio/include/AudioFile.hxx` is [AudioFile](https://github.com/adamstark/AudioFile) 1.1.1 by Adam Stark (MIT, notice in the file), and the submodules under `external/` carry their own license files.
+Bundled third-party code keeps its own license: `engine/audio/include/AudioFile.hxx` is [AudioFile](https://github.com/adamstark/AudioFile) 1.1.1 by Adam Stark (MIT, notice in the file), and the submodules under `external/` are MIT: [libsoundio](https://github.com/kolbbond/libsoundio) (a fork of Andrew Kelley's) and [simple-magnum-gui](https://github.com/kolbbond/simple-magnum-gui), whose bundled fonts (SIL OFL 1.1 and Apache 2.0) are listed in its `assets/LICENSES`.
