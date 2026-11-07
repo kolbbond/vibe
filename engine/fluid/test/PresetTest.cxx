@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <filesystem>
 #include <string>
 
 #include <Corrade/TestSuite/Tester.h>
@@ -128,7 +129,7 @@ void PresetTest::saveAndLoadFile() {
     Preset p;
     p.name = "saved";
     p.look.glow = 1.25f;
-    const std::string path = "/tmp/vibe-fluid-preset-test.json";
+    const std::string path = (std::filesystem::temp_directory_path() / "vibe-fluid-preset-test.json").string();
     std::string error;
     CORRADE_VERIFY(savePreset(path, p, error));
     Preset q;
