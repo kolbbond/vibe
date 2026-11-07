@@ -51,7 +51,7 @@ static void test_peak_at_tone() {
     const double sample_rate = 48000.0;
     arma::Mat<fltp> samples(1, n + 1);
     for (arma::uword i = 0; i <= n; i++) {
-        samples(0, i) = std::sin(2.0 * M_PI * 1000.0 * static_cast<double>(i) / sample_rate);
+        samples(0, i) = std::sin(2.0 * arma::datum::pi * 1000.0 * static_cast<double>(i) / sample_rate);
     }
     arma::Row<fltp> freqs;
     arma::Mat<fltp> mags;
