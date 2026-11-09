@@ -191,34 +191,30 @@ add_custom_command(
     COMMENT "Running final post-build script..."
 )
 
-# Copy DLLs to output directory on Windows
+# Windows: third-party DLLs (and Magnum plugins) next to the executables so they run from the
+# build tree. Copied at configure time: copying during the build raced the linkers writing to the
+# same bin/ ("permission denied" on avcodec-*.dll). The engine's own DLLs are built into bin/.
 if(WIN32)
-    # Get vcpkg bin directory (convert to CMake path to avoid backslash issues)
     if(DEFINED ENV{VCPKG_ROOT})
         file(TO_CMAKE_PATH "$ENV{VCPKG_ROOT}" _VCPKG_ROOT_PATH)
     else()
         file(TO_CMAKE_PATH "${_VCPKG_ROOT}" _VCPKG_ROOT_PATH)
     endif()
     set(VCPKG_BIN_DIR "${_VCPKG_ROOT_PATH}/installed/x64-windows/bin")
-
-    add_custom_command(TARGET vibe_all POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:vibeaudio>"
-            "$<TARGET_FILE:vibecommon>"
-            "$<TARGET_FILE:vibegraphics>"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${DEPS_PREFIX}/lib/soundio.dll"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${DEPS_PREFIX}/bin"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-        # Copy all vcpkg DLLs (SDL2, FFmpeg, etc.)
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${VCPKG_BIN_DIR}"
-            "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
-        COMMENT "Copying DLLs to output directory..."
-    )
+    foreach(dir "${DEPS_PREFIX}/bin" "${DEPS_PREFIX}/lib" "${VCPKG_BIN_DIR}")
+        if(NOT IS_DIRECTORY "${dir}")
+            continue()
+        endif()
+        if(dir STREQUAL "${DEPS_PREFIX}/lib")
+            file(GLOB _runtime "${dir}/*.dll") # soundio.dll; the rest of lib/ is import libs and cmake files
+            file(COPY ${_runtime} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+        else()
+            file(GLOB_RECURSE _runtime "${dir}/*.dll" "${dir}/*.conf")
+            file(COPY "${dir}/" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" FILES_MATCHING PATTERN "*.dll" PATTERN "*.conf")
+        endif()
+        # a rebuilt .deps or a new vcpkg package re-runs configure, which copies again
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${_runtime})
+    endforeach()
 endif()
 
 # test @hey: move to sublibraries

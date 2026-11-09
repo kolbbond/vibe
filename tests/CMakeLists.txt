@@ -26,6 +26,9 @@ foreach(srcfile ${test_list})
   add_test(${name} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${name})
 endforeach()
 
+# opens an OpenGL window: needs a real GPU, so CI runs `ctest -LE gpu`
+set_tests_properties(test_hitbox PROPERTIES LABELS gpu)
+
 # SpectralAnalysis test (helpers now live in vibe-audio library)
 add_executable(test_audio_pipeline test_audio_pipeline.cxx)
 target_link_libraries(test_audio_pipeline
